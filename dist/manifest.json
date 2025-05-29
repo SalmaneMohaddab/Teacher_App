@@ -1,6 +1,6 @@
 {
-  "name": "Arabesque Excel Insights",
-  "short_name": "Excel Insights",
+  "name": "محلل نقط التلاميذ",
+  "short_name": "نقط التلاميذ",
   "description": "تحليل نقط التلاميذ وإنشاء تقارير إحصائية",
   "start_url": "/",
   "display": "standalone",

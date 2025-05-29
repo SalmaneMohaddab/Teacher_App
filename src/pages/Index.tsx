@@ -3,7 +3,6 @@ import Header from '../components/Header';
 import FileUpload from '../components/FileUpload';
 import InsightCard from '../components/InsightCard';
 import PDFButton from '../components/PDFButton';
-import InstallPWA from '../components/InstallPWA';
 import { ExcelAnalysis } from '../utils/excelAnalyzer';
 import { FileImage, FileText, Table } from 'lucide-react';
 
@@ -20,9 +19,8 @@ const Index = () => {
         <Header />
         
         <div className="max-w-xl mx-auto bg-white rounded-2xl p-6 shadow-md mb-10 animate-fade-in">
-          <div className="flex justify-between items-start mb-6">
+          <div className="mb-6">
             <h2 className="text-xl font-bold">رفع ملف نقط الطلاب للتحليل</h2>
-            <InstallPWA />
           </div>
           <FileUpload onAnalysisComplete={handleAnalysisComplete} />
         </div>
