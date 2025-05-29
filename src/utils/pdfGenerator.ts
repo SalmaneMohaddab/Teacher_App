@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ExcelAnalysis } from './excelAnalyzer';
 import { amiriFontBase64 } from './amiriFont';
-import path from 'path';
+import { getImage } from './imageHandler';
 
 // --- Font Setup ---
 
@@ -15,15 +15,16 @@ const COLOR_HEADER = '#03045e';
 const COLOR_LIGHT = '#f8f9fa';
 const COLOR_TEXT = '#212529';
 
-export const generatePDF = (analysis: ExcelAnalysis, fileName: string) => {
-  return new Promise<void>((resolve, reject) => {
+export const generatePDF = async (analysis: ExcelAnalysis, fileName: string) => {
+  return new Promise<void>(async (resolve, reject) => {
     try {
       const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 15;
       const rightX = pageWidth - margin;
-console.log('Generating PDF')
+      console.log('Generating PDF')
+
       // --- Font Setup ---
       doc.addFileToVFS('Amiri-Regular.ttf', amiriFontBase64);
       doc.addFont('Amiri-Regular.ttf', FONT_NAME, 'normal');
@@ -31,13 +32,29 @@ console.log('Generating PDF')
       doc.setFontSize(12);
       doc.setTextColor(COLOR_TEXT);
 
-      // Add the image at the top of the page
-      const img = new Image();
-      img.src = 'image.png';
-      console.log('Image source:', img.src);
-      doc.addImage(img, 'PNG', pageWidth / 2 - 30, 10, 60, 30); // Adjust size and position as needed
+      let currentY = 10; // Start position
 
-      let currentY = 50; // Adjusted starting position to accommodate the image
+      // Try to get the image if online
+      const imageUrl = await getImage();
+      if (imageUrl) {
+        try {
+          const img = new Image();
+          img.src = imageUrl;
+          await new Promise((resolve, reject) => {
+            img.onload = () => {
+              doc.addImage(img, 'JPEG', pageWidth / 2 - 30, currentY, 60, 30);
+              currentY = 50; // Adjust position after image
+              resolve(null);
+            };
+            img.onerror = reject;
+          });
+        } catch (error) {
+          console.error('Error loading image:', error);
+          currentY = 30; // Smaller gap if no image
+        }
+      } else {
+        currentY = 30; // Smaller gap if no image
+      }
 
       // --- Header ---
       doc.setFontSize(11);
